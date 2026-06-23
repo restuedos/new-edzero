@@ -1,0 +1,22 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "Site CMS (site)",
+      "Group": "Servers",
+      "Host": "pgsql",
+      "Port": 5432,
+      "MaintenanceDB": "site",
+      "Username": "site",
+      "SSLMode": "prefer"
+    },
+    "2": {
+      "Name": "License server (license-pgsql)",
+      "Group": "Servers",
+      "Host": "license-pgsql",
+      "Port": 5432,
+      "MaintenanceDB": "license",
+      "Username": "license",
+      "SSLMode": "prefer"
+    }
+  }
+}

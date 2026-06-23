@@ -1,0 +1,25 @@
+{
+  "name": "edzero",
+  "version": "2.0.0",
+  "private": true,
+  "description": "EDZero 2.0 — Company profile starter with Payload CMS and license stack",
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm --filter @edzero/site dev",
+    "dev:site": "pnpm --filter @edzero/site dev",
+    "dev:license-server": "pnpm --filter @edzero/license-server dev",
+    "dev:license-web": "pnpm --filter @edzero/license-web dev",
+    "dev:all": "pnpm -r --parallel --filter @edzero/site --filter @edzero/license-server --filter @edzero/license-web dev",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint",
+    "seed": "pnpm --filter @edzero/site seed",
+    "prisma:generate": "pnpm --filter @edzero/license-server prisma:generate",
+    "prisma:migrate": "pnpm --filter @edzero/license-server prisma:migrate",
+    "prisma:seed": "pnpm --filter @edzero/license-server prisma:seed"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.15.0"
+}
