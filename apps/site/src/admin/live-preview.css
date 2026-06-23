@@ -1,0 +1,22 @@
+/* Desktop breakpoint: allow horizontal pan when the device frame is wider than the pane */
+.live-preview-window.live-preview-window--is-live-previewing {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+}
+
+.live-preview-window__wrapper {
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Vertical scroll belongs to the iframe document only — not this wrapper */
+.live-preview-window__main {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  min-height: 0;
+}
+
+.live-preview-window__main .iframe-loader__container {
+  overflow: hidden;
+  min-height: 0;
+}
