@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String   @id @default(cuid())
+  name           String
+  email          String   @unique
+  password       String
+  adminApiKeyHash String? @map("admin_api_key_hash")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  generationLogs LicenseGenerationLog[]
+  auditLogs      LicenseServerAuditLog[] @relation("AuditActor")
+  deviceBlocks   LicenseDeviceBlock[]
+
+  @@map("users")
+}
+
+model License {
+  id                Int       @id @default(autoincrement())
+  licenseKey        String    @unique @map("license_key")
+  keyHash           String    @unique @map("key_hash")
+  status            String    @default("active")
+  plan              String?
+  customerName      String?   @map("customer_name")
+  customerEmail     String?   @map("customer_email")
+  maxActivations    Int       @default(1) @map("max_activations")
+  activationPolicy  String    @default("block_new") @map("activation_policy")
+  allowedDomains    Json?     @map("allowed_domains")
+  meta              Json?
+  expiresAt         DateTime? @map("expires_at")
+  lastVerifiedAt    DateTime? @map("last_verified_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  activations    LicenseActivation[]
+  deviceBlocks   LicenseDeviceBlock[]
+  generationLogs LicenseGenerationLog[]
+
+  @@map("licenses")
+}
+
+model LicenseActivation {
+  id                 Int      @id @default(autoincrement())
+  licenseId          Int      @map("license_id")
+  deviceFingerprint  String   @map("device_fingerprint")
+  appUrl             String   @map("app_url")
+  environment        String
+  environmentBucket  String   @map("environment_bucket")
+  ipAddress          String?  @map("ip_address")
+  userAgent          String?  @map("user_agent")
+  lastSeenAt         DateTime @default(now()) @map("last_seen_at")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  license License @relation(fields: [licenseId], references: [id], onDelete: Cascade)
+
+  @@unique([licenseId, deviceFingerprint, environmentBucket])
+  @@map("license_activations")
+}
+
+model LicenseDeviceBlock {
+  id                Int      @id @default(autoincrement())
+  licenseId         Int      @map("license_id")
+  deviceFingerprint String   @map("device_fingerprint")
+  environmentBucket String   @map("environment_bucket")
+  reason            String?
+  blockedByUserId   String?  @map("blocked_by_user_id")
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  license   License @relation(fields: [licenseId], references: [id], onDelete: Cascade)
+  blockedBy User?   @relation(fields: [blockedByUserId], references: [id])
+
+  @@unique([licenseId, deviceFingerprint, environmentBucket])
+  @@map("license_device_blocks")
+}
+
+model LicenseGenerationLog {
+  id        Int      @id @default(autoincrement())
+  userId    String?  @map("user_id")
+  licenseId Int      @map("license_id")
+  channel   String
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  metadata  Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user    User?   @relation(fields: [userId], references: [id])
+  license License @relation(fields: [licenseId], references: [id], onDelete: Cascade)
+
+  @@map("license_generation_logs")
+}
+
+model LicenseServerAuditLog {
+  id         Int      @id @default(autoincrement())
+  actorId    String?  @map("actor_id")
+  action     String
+  entityType String   @map("entity_type")
+  entityId   String   @map("entity_id")
+  metadata   Json?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  actor User? @relation("AuditActor", fields: [actorId], references: [id])
+
+  @@map("license_server_audit_logs")
+}
+
+model ServerSetting {
+  id    Int    @id @default(1)
+  key   String @unique
+  value String
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("server_settings")
+}
+
+model UsedNonce {
+  id        String   @id @default(cuid())
+  nonce     String
+  scope     String
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([nonce, scope])
+  @@map("used_nonces")
+}
