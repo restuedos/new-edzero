@@ -26,6 +26,7 @@ type Project = {
 
 type Props = {
   projects: Project[];
+  layout?: 'home' | 'page';
 };
 
 function tileRowSpan(index: number): number {
@@ -102,7 +103,7 @@ function PortfolioFilters({
   );
 }
 
-export function PortfolioSection({ projects }: Props) {
+export function PortfolioSection({ projects, layout = 'home' }: Props) {
   const [active, setActive] = useState('all');
 
   const filtered = useMemo(
@@ -111,15 +112,37 @@ export function PortfolioSection({ projects }: Props) {
   );
 
   return (
-    <section className="game-section-bg relative overflow-hidden pb-8 pt-4 md:pb-10 md:pt-6">
+    <section
+      className={cn(
+        'relative overflow-hidden',
+        layout === 'page'
+          ? 'flex min-h-0 flex-1 flex-col py-8 md:py-12'
+          : 'game-section-bg pb-8 pt-4 md:pb-10 md:pt-6',
+      )}
+    >
       <TechGameDecor variant="portfolio" />
 
-      <div className="section-padding relative z-[1] !pb-10 !pt-0">
-        <SectionHeading title="Portfolio" variant="light" navSafe className="mb-10 md:mb-12" />
+      <div
+        className={cn(
+          'relative z-[1] flex flex-col',
+          layout === 'page' ? 'min-h-0 flex-1' : 'section-padding !pb-10 !pt-0',
+        )}
+      >
+        <SectionHeading
+          title="Portfolio"
+          variant="light"
+          navSafe={layout === 'home'}
+          className="mb-10 md:mb-12"
+        />
 
         <PortfolioFilters active={active} onChange={setActive} />
 
-        <div className="game-portfolio-grid mx-auto grid max-w-6xl grid-cols-1 gap-1 sm:grid-cols-2 lg:grid-cols-3 lg:auto-rows-[11rem]">
+        <div
+          className={cn(
+            'game-portfolio-grid mx-auto grid max-w-6xl flex-1 grid-cols-1 gap-1 sm:grid-cols-2 lg:grid-cols-3 lg:auto-rows-[11rem]',
+            layout === 'page' && 'min-h-[min(50vh,28rem)] content-start',
+          )}
+        >
           {filtered.map((project, index) => {
             const rowSpan = tileRowSpan(index);
             return (

@@ -12,6 +12,7 @@ type Props = {
   phone?: string | null;
   address?: string | null;
   className?: string;
+  layout?: 'home' | 'page';
 };
 
 function ContactInfoRow({
@@ -40,7 +41,14 @@ function ContactInfoRow({
   );
 }
 
-export function ContactSection({ siteName = 'EDZERO', email, phone, address, className }: Props) {
+export function ContactSection({
+  siteName = 'EDZERO',
+  email,
+  phone,
+  address,
+  className,
+  layout = 'home',
+}: Props) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
 
@@ -76,10 +84,23 @@ export function ContactSection({ siteName = 'EDZERO', email, phone, address, cla
   }
 
   return (
-    <div className={cn('relative overflow-hidden section-padding !py-8 md:!py-10', className)}>
+    <div
+      className={cn(
+        'relative overflow-hidden',
+        layout === 'page'
+          ? 'flex flex-1 flex-col justify-center py-8 md:py-12'
+          : 'section-padding !py-8 md:!py-10',
+        className,
+      )}
+    >
       <TechGameDecor variant="contact" />
       <div className="relative z-[1]">
-        <SectionHeading title="Get in Touch" variant="light" navSafe className="mb-6 md:mb-8" />
+        <SectionHeading
+          title="Get in Touch"
+          variant="light"
+          navSafe={layout === 'home'}
+          className="mb-6 md:mb-8"
+        />
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-start lg:gap-10">
           <form onSubmit={handleSubmit} className="flex flex-col space-y-6">
             <input name="name" required placeholder="Name" className="input-underline" />

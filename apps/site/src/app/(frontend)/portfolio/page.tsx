@@ -1,8 +1,6 @@
 import { getPayload } from '@/lib/payload';
 import { mediaUrl } from '@/lib/utils';
-import { SiteFooter } from '@/components/layout/SiteFooter';
-import { SiteNav } from '@/components/layout/SiteNav';
-import { ThemeShell } from '@/components/layout/ThemeShell';
+import { SubPageLayout } from '@/components/layout/SubPageLayout';
 import { PortfolioSection } from '@/components/sections/PortfolioSection';
 
 export default async function PortfolioPage() {
@@ -13,19 +11,16 @@ export default async function PortfolioPage() {
   ]);
 
   return (
-    <ThemeShell settings={settings}>
-      <SiteNav siteName={settings.siteName ?? 'EDZERO'} socialLinks={settings.socialLinks ?? []} />
-      <main className="pt-24">
-        <PortfolioSection
-          projects={projects.docs.map((p) => ({
-            id: String(p.id),
-            title: p.title,
-            category: p.category,
-            coverImageUrl: mediaUrl(p.coverImage),
-          }))}
-        />
-      </main>
-      <SiteFooter siteName={settings.siteName ?? 'EDZERO'} copyrightText={settings.copyrightText} socialLinks={settings.socialLinks ?? []} />
-    </ThemeShell>
+    <SubPageLayout settings={settings}>
+      <PortfolioSection
+        layout="page"
+        projects={projects.docs.map((p) => ({
+          id: String(p.id),
+          title: p.title,
+          category: p.category,
+          coverImageUrl: mediaUrl(p.coverImage),
+        }))}
+      />
+    </SubPageLayout>
   );
 }

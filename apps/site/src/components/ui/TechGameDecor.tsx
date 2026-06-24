@@ -10,6 +10,7 @@ type Variant =
   | 'portfolio'
   | 'testimonials'
   | 'journal'
+  | 'blog'
   | 'contact'
   | 'footer';
 
@@ -223,19 +224,31 @@ export function TechGameDecor({ variant, className }: Props) {
     );
   }
 
-  if (variant === 'journal') {
+  if (variant === 'journal' || variant === 'blog') {
     return (
       <div className={cn('pointer-events-none absolute inset-0 overflow-hidden', className)} aria-hidden>
         <GameDotMatrix className="absolute left-[4%] top-[10%] h-[70%] w-[min(36vw,360px)] opacity-34" />
         <GameDotMatrix className="absolute right-[3%] bottom-[8%] h-[45%] w-[min(32vw,300px)] opacity-26" />
+        <GameDotMatrix className="absolute left-[38%] top-[4%] h-[28%] w-[min(22vw,200px)] opacity-20" />
         <GameCross className="absolute left-[8%] top-[22%] opacity-50" size="md" />
+        <GameCross className="absolute left-[2%] top-[52%] opacity-28" size="sm" />
         <GameTriangle className="absolute right-[2%] top-[10%] -rotate-6 opacity-45" accent size="sm" />
+        <GameTriangle className="absolute left-[6%] bottom-[18%] rotate-12 opacity-32" accent size="sm" />
         <GameCircle className="absolute left-[38%] bottom-[16%] opacity-38" accent size="sm" />
+        <GameCircle className="absolute right-[14%] top-[34%] opacity-30" size="sm" />
         <GameSquare className="absolute right-[6%] bottom-[24%] rotate-45 opacity-42" accent size="sm" />
-        <GameCross className="absolute bottom-[12%] left-[18%] opacity-32" size="sm" />
         <GameSquare className="absolute left-[2%] top-[38%] opacity-36" size="sm" />
-        <GameCircle className="absolute right-[2%] top-[30%] opacity-34" accent size="sm" />
+        <GameSquare className="absolute right-[2%] top-[58%] rotate-12 opacity-28" accent size="sm" />
+        <GameCross className="absolute bottom-[12%] left-[18%] opacity-32" size="sm" />
         <GameCross className="absolute right-[3%] bottom-[16%] opacity-30" size="sm" />
+        {variant === 'blog' && (
+          <>
+            <GameDotMatrix className="absolute bottom-[2%] left-[12%] h-[32%] w-[min(28vw,240px)] opacity-18" />
+            <GameTriangle className="absolute right-[18%] bottom-[8%] -rotate-12 opacity-26" size="sm" />
+            <GameCircle className="absolute left-[52%] top-[12%] opacity-24" accent size="sm" />
+            <GameCross className="absolute right-[8%] top-[48%] opacity-22" size="md" />
+          </>
+        )}
         <div className="game-scanlines absolute inset-0 opacity-[0.03]" />
       </div>
     );

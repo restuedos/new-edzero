@@ -1,6 +1,7 @@
 import { MediaImage } from '@/components/ui/MediaImage';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { TechGameDecor } from '@/components/ui/TechGameDecor';
+import { cn } from '@/lib/utils';
 
 function AccentText({ text }: { text: string }) {
   const parts = text.split(/(\*\*[^*]+\*\*)/g);
@@ -28,20 +29,42 @@ type Props = {
   aboutImageUrl?: string;
   cvUrl?: string;
   skills?: string[];
+  layout?: 'home' | 'page';
 };
 
-export function AboutSection({ title, name, text, aboutImageUrl, cvUrl, skills = [] }: Props) {
+export function AboutSection({
+  title,
+  name,
+  text,
+  aboutImageUrl,
+  cvUrl,
+  skills = [],
+  layout = 'home',
+}: Props) {
   const paragraphs = (text ?? '')
     .split(/\n\n+/)
     .map((p) => p.trim())
     .filter(Boolean);
 
   return (
-    <section id="about" className="game-section-bg snap-screen snap-screen-center section-padding relative overflow-hidden">
+    <section
+      id="about"
+      className={cn(
+        'relative overflow-hidden',
+        layout === 'page'
+          ? 'flex flex-1 flex-col justify-center py-8 md:py-12'
+          : 'game-section-bg snap-screen snap-screen-center section-padding',
+      )}
+    >
       <TechGameDecor variant="about-ambient" />
 
       <div className="relative z-[1] w-full">
-        <SectionHeading title={title} variant="light" navSafe className="mb-8 md:mb-10" />
+        <SectionHeading
+          title={title}
+          variant="light"
+          navSafe={layout === 'home'}
+          className="mb-8 md:mb-10"
+        />
 
         <div className="mx-auto grid max-w-6xl items-center gap-10 md:grid-cols-[0.92fr_1.08fr] md:gap-12 lg:gap-14">
           <div className="relative mx-auto flex w-full max-w-md justify-center md:mx-0 md:justify-end md:pr-6">

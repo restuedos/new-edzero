@@ -1,7 +1,5 @@
 import { getPayload } from '@/lib/payload';
-import { SiteFooter } from '@/components/layout/SiteFooter';
-import { SiteNav } from '@/components/layout/SiteNav';
-import { ThemeShell } from '@/components/layout/ThemeShell';
+import { SubPageLayout } from '@/components/layout/SubPageLayout';
 import { ServicesSection } from '@/components/sections/ServicesSection';
 
 export default async function ServicesPage() {
@@ -12,19 +10,16 @@ export default async function ServicesPage() {
   ]);
 
   return (
-    <ThemeShell settings={settings}>
-      <SiteNav siteName={settings.siteName ?? 'EDZERO'} socialLinks={settings.socialLinks ?? []} />
-      <main className="pt-24">
-        <ServicesSection
-          services={services.docs.map((s) => ({
-            id: String(s.id),
-            title: s.title,
-            description: s.description,
-            icon: s.icon,
-          }))}
-        />
-      </main>
-      <SiteFooter siteName={settings.siteName ?? 'EDZERO'} copyrightText={settings.copyrightText} socialLinks={settings.socialLinks ?? []} />
-    </ThemeShell>
+    <SubPageLayout settings={settings}>
+      <ServicesSection
+        layout="page"
+        services={services.docs.map((s) => ({
+          id: String(s.id),
+          title: s.title,
+          description: s.description,
+          icon: s.icon,
+        }))}
+      />
+    </SubPageLayout>
   );
 }
