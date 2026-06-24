@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.module';
 import { LicenseCryptoService } from './license-crypto.service';
 import { LicenseInboundValidator } from './license-inbound-validator.service';
@@ -156,15 +157,24 @@ export class LicenseVerificationService {
 export class LicenseManagerService {
   constructor(private prisma: PrismaService) {}
 
-  async generate(attrs: {
-    plan?: string;
-    customerName?: string;
-    customerEmail?: string;
-    maxActivations?: number;
-    allowedDomains?: string[];
-    expiresInDays?: number;
-    activationPolicy?: string;
-  }) {
+  async generate(
+    attrs: {
+      plan?: string;
+      customerName?: string;
+      customerEmail?: string;
+      maxActivations?: number;
+      allowedDomains?: string[];
+      expiresInDays?: number;
+      activationPolicy?: string;
+    },
+    log?: {
+      userId?: string;
+      channel?: string;
+      ipAddress?: string;
+      userAgent?: string;
+      metadata?: Prisma.InputJsonValue;
+    },
+  ) {
     const plan = (attrs.plan ?? 'PRO').toUpperCase();
     const suffix = randomBytes(8).toString('hex').toUpperCase();
     const licenseKey = `EDZ-${plan}-${new Date().getFullYear()}-${suffix}`;
@@ -189,7 +199,14 @@ export class LicenseManagerService {
     });
 
     await this.prisma.licenseGenerationLog.create({
-      data: { licenseId: license.id, channel: 'api' },
+      data: {
+        licenseId: license.id,
+        channel: log?.channel ?? 'api',
+        userId: log?.userId,
+        ipAddress: log?.ipAddress,
+        userAgent: log?.userAgent,
+        metadata: log?.metadata ?? undefined,
+      },
     });
 
     return { ...license, licenseKey };
