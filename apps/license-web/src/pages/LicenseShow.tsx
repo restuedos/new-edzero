@@ -1,4 +1,4 @@
-import { EditButton, Show, TextField } from '@refinedev/antd';
+import { Show, TextField } from '@refinedev/antd';
 import { useShow } from '@refinedev/core';
 import { Button, Descriptions, Space, Table, Tag, Typography, message } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
@@ -16,16 +16,7 @@ export function LicenseShow() {
   };
 
   return (
-    <Show
-      isLoading={isLoading}
-      title={`License #${license?.id ?? ''}`}
-      headerButtons={({ defaultButtons }) => (
-        <>
-          {defaultButtons}
-          <EditButton />
-        </>
-      )}
-    >
+    <Show isLoading={isLoading} title={`License #${license?.id ?? ''}`}>
       <Descriptions bordered column={1} size="small">
         <Descriptions.Item label="License Key">
           <Space>
