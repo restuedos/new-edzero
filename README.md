@@ -24,9 +24,7 @@ edzero 2.0/
 ├── docker/
 │   ├── site/Dockerfile
 │   └── nginx/nginx.local.conf
-├── guides/
-│   ├── Personal Portfolio/   # Design reference mockups
-│   └── CMS.md                  # Editor guide
+├── storage/               # Runtime data (license.json, uploads, CV)
 └── scripts/dockhelp.sh
 ```
 
@@ -80,19 +78,43 @@ pnpm dev:license-web
 | License vendor admin | `https://license.edzero.test` |
 | License API docs | `https://license.edzero.test/api/docs` |
 
+Payload REST/GraphQL is served under `https://edzero.test/api/*` (same origin as the site). There is no separate `api.edzero.test` host in this setup.
+
 ## License enforcement
 
 The starter requires a valid license before the public site and CMS admin are usable.
 
 1. Generate RSA keys: `./scripts/generate-keys.sh`
 2. Set `LICENSE_VERIFY_URL` in `.env.local` (empty = enforcement off for local dev)
-3. Activate at `https://edzero.test/license/activate`
+3. Generate a key in the license vendor admin (`https://license.edzero.test`, default login after seed: `admin@license.edzero.test` / `password`)
+4. Activate at `https://edzero.test/license/activate`
 
-## CMS default login
+**Heartbeat (default on):** With `LICENSE_HEARTBEAT_ENABLED` unset or `true`, the site pings the license server periodically (via `/api/license/status`, throttled to at most once per hour). If the server reports revoke/suspend, the local license file is removed and the site redirects to activation. Stale window defaults to 24 hours (`LICENSE_HEARTBEAT_MAX_STALE_HOURS`).
 
-After seed: `admin@edzero.test` / `password`
+Check status:
 
-See [guides/CMS.md](guides/CMS.md) for content types and editing workflow.
+```bash
+curl -s https://edzero.test/api/license/status | jq
+```
+
+## CMS
+
+Admin: `https://edzero.test/admin` — after seed: `admin@edzero.test` / `password`
+
+| Collection / global | Used on the site |
+|---------------------|------------------|
+| **Global Settings** | Hero, about, skillset, theme colors, contact info, social links, copyright |
+| **Services** | `#services` and `/services` |
+| **Projects** | `#portfolio` and `/portfolio` |
+| **Partners** | Partner logo strip on homepage |
+| **Testimonials** | `#testimonials` carousel |
+| **Articles** | `#journal`, `/blog`, `/blog/[slug]` |
+| **Contact Submissions** | Inbound contact form messages (admin only) |
+| **Media** | Images and CV PDF — MinIO bucket `edzero`, served via `https://s3.edzero.test` |
+
+Global Settings includes a **Theme colors** group (primary accent, backgrounds, surfaces, text) and a **Skillset** array for the About section. Changes apply on save without rebuilding the site.
+
+**Live Preview:** In Global Settings or Articles, use the eye icon in the document toolbar to open a split-screen frontend preview that refreshes after Save.
 
 ## Docker Compose profiles
 
@@ -109,11 +131,30 @@ See [guides/CMS.md](guides/CMS.md) for content types and editing workflow.
 ## Scripts
 
 ```bash
+pnpm install
+pnpm test               # license-client + license-server tests
+pnpm lint               # TypeScript check per app
+pnpm build              # site + license stack
 pnpm dev:site           # Next.js + Payload dev server
 pnpm dev:all            # site + license stack
 pnpm --filter @edzero/site seed
-pnpm build
 ./scripts/dockhelp.sh help
+```
+
+## Verification (smoke test)
+
+After `./scripts/dockhelp.sh init --local`:
+
+1. **Build** — `pnpm build` exits 0
+2. **License gate** — without `storage/private/license.json`, `https://edzero.test` redirects to `/license/activate`
+3. **Activate** — generate key in license admin, activate on site, homepage loads
+4. **CMS** — log in at `/admin`, edit Global Settings, confirm Live Preview updates
+5. **Revoke** — revoke license in vendor admin; after heartbeat, site locks again
+
+Rebuild a single service:
+
+```bash
+docker compose -f docker-compose.local.yml up -d --build site
 ```
 
 ## License
