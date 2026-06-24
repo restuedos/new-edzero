@@ -19,6 +19,24 @@ describe('@edzero/license-client', () => {
     expect(config.appUrl).toBe('https://edzero.test');
   });
 
+  it('defaults heartbeat to enabled with 24h stale window', () => {
+    const config = createLicenseConfigFromEnv({
+      LICENSE_VERIFY_URL: 'https://license.test/api/license/verify',
+      LICENSE_LOCAL_HMAC_SECRET: 'secret',
+    });
+
+    expect(config.heartbeatEnabled).toBe(true);
+    expect(config.heartbeatMaxStaleHours).toBe(24);
+  });
+
+  it('allows disabling heartbeat explicitly', () => {
+    const config = createLicenseConfigFromEnv({
+      LICENSE_HEARTBEAT_ENABLED: 'false',
+    });
+
+    expect(config.heartbeatEnabled).toBe(false);
+  });
+
   it('INVALIDATE_APP_LICENSE constant matches server contract', () => {
     expect(INVALIDATE_APP_LICENSE).toBe('invalidate_app_license');
   });

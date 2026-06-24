@@ -14,8 +14,8 @@ export function createLicenseConfigFromEnv(env: NodeJS.ProcessEnv = process.env)
     verificationPublicKeyPath:
       env.LICENSE_VERIFICATION_PUBLIC_KEY_PATH ?? 'storage/private/license-verification-public.rsa',
     localHmacSecret: env.LICENSE_LOCAL_HMAC_SECRET ?? '',
-    heartbeatEnabled: env.LICENSE_HEARTBEAT_ENABLED === 'true',
-    heartbeatMaxStaleHours: parseInt(env.LICENSE_HEARTBEAT_MAX_STALE_HOURS ?? '48', 10),
+    heartbeatEnabled: env.LICENSE_HEARTBEAT_ENABLED !== 'false',
+    heartbeatMaxStaleHours: parseInt(env.LICENSE_HEARTBEAT_MAX_STALE_HOURS ?? '24', 10),
     requireHttps: env.LICENSE_REQUIRE_HTTPS !== 'false',
     allowedHosts: (env.LICENSE_ALLOWED_HOSTS ?? '')
       .split(',')

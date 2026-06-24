@@ -113,6 +113,25 @@ export class LicenseService {
     }
   }
 
+  async ensureHeartbeatFresh(): Promise<HeartbeatResult | null> {
+    if (!this.shouldEnforce() || !this.config.heartbeatEnabled) {
+      return null;
+    }
+
+    const status = this.readStatus();
+    if (!status.license_token) {
+      return null;
+    }
+
+    const ref = status.last_heartbeat_at ?? (status as Record<string, string>).verified_at;
+    const minIntervalMs = this.heartbeatMinIntervalMs();
+    if (ref && Date.now() - new Date(ref).getTime() < minIntervalMs) {
+      return { ok: true, message: 'Heartbeat skipped — masih dalam interval minimum.' };
+    }
+
+    return this.runHeartbeat();
+  }
+
   async runHeartbeat(): Promise<HeartbeatResult> {
     if (!this.shouldEnforce() || !this.config.heartbeatEnabled) {
       return { ok: true, message: 'Heartbeat dinonaktifkan atau enforcement lisensi mati.' };
@@ -185,6 +204,12 @@ export class LicenseService {
     } catch {
       return { ok: false, message: 'Tidak dapat menghubungi license server untuk heartbeat.' };
     }
+  }
+
+  private heartbeatMinIntervalMs(): number {
+    const quarterStaleMs = (this.config.heartbeatMaxStaleHours * 60 * 60 * 1000) / 4;
+    const oneHourMs = 60 * 60 * 1000;
+    return Math.min(quarterStaleMs, oneHourMs);
   }
 
   private resolvedLocalHmacSecret(): string {

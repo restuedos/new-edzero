@@ -3,6 +3,8 @@ import { getLicenseService } from '@/lib/license';
 
 export async function GET() {
   const service = getLicenseService();
+  await service.ensureHeartbeatFresh();
+
   return NextResponse.json({
     enforced: service.shouldEnforce(),
     verified: service.isVerified(),
